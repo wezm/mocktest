@@ -353,6 +353,13 @@ class MockTestTest(mocktest.TestCase):
 		
 		# pretend we're in a new test (wipe the expected calls register)
 		mocktest.mock.MockWrapper._all_expectations = []
-	
+
+	def test_assert_raises_with_args(self):
+		def func_with_args(arg1, arg2, extra):
+			value = "%s: %d%s" % (arg1, arg2, extra)
+			raise StandardError(value)
+
+		self.assertRaises(StandardError, func_with_args, 'one', 2, extra='y', args=('one: 2y',))
+
 if __name__ == '__main__':
 	unittest.main()

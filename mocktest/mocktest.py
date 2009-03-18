@@ -186,17 +186,27 @@ class TestCase(unittest.TestCase):
 				in_a_not_b[k] = v
 		return in_a_not_b
 	
-	def assertRaises(self, exception, func, message = None, args = None, matching=None):
+	def assertRaises(self, exception, func, *func_args, **kwargs):
 		"""
-		Enhanced assertRaises, able to:
-		 - check arguments (args)
-		 - match a regular expression on the resulting expression message (matching)
+		Enhanced assertRaises. The following will be extracted from kwargs
+		if supplied and used as follows:
+		 - check arguments to the exception (args)
+		 - match a regular expression on the resulting expression
+		   message (matching)
 		 - compare message strings (message)
+
+		All other positional (func_args) and keyword args (kwargs)
+		are passed to the callable (func)
 		"""
 		callsig = "%s()" % (callable.__name__,)
 
+		# Extract special args from kwargs
+		args = kwargs.pop('args', None)
+		message = kwargs.pop('message', None)
+		matching = kwargs.pop('matching', None)
+
 		try:
-			func()
+			func(*func_args, **kwargs)
 		except exception, exc:
 			if args is not None:
 				self.failIf(exc.args != args,
